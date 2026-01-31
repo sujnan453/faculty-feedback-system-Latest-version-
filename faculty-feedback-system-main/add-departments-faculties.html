@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Departments & Faculties</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #1a202c;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-direction: column;
+        }
+
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .status.show {
+            display: block;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .status ul {
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .status li {
+            margin-bottom: 5px;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            font-size: 14px;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Add Departments & Faculties</h1>
+        <p class="subtitle">Initialize the system with sample departments and faculty members</p>
+
+        <div class="info-box">
+            ℹ️ This will add 5 departments (BCA, BSC, BCOM, BBA, BA) with 8-10 faculty members each.
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="addDepartmentsAndFaculties()">
+                ➕ Add All Departments & Faculties
+            </button>
+            <button class="btn-secondary" onclick="goBack()">
+                ← Go Back
+            </button>
+        </div>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script>
+        function addDepartmentsAndFaculties() {
+            try {
+                const departmentsData = {
+                    'BCA': {
+                        fullName: 'Bachelor of Computer Applications',
+                        faculties: [
+                            'Dr. Rajesh Kumar',
+                            'Prof. Priya Sharma',
+                            'Dr. Amit Patel',
+                            'Prof. Neha Singh',
+                            'Dr. Vikram Desai',
+                            'Prof. Anjali Verma',
+                            'Dr. Rohan Gupta',
+                            'Prof. Sneha Reddy',
+                            'Dr. Arjun Nair'
+                        ]
+                    },
+                    'BSC': {
+                        fullName: 'Bachelor of Science',
+                        faculties: [
+                            'Dr. Suresh Iyer',
+                            'Prof. Divya Menon',
+                            'Dr. Sanjay Rao',
+                            'Prof. Kavya Krishnan',
+                            'Dr. Arun Kumar',
+                            'Prof. Pooja Saxena',
+                            'Dr. Nikhil Sharma',
+                            'Prof. Ritika Jain',
+                            'Dr. Manoj Singh',
+                            'Prof. Shreya Patel'
+                        ]
+                    },
+                    'BCOM': {
+                        fullName: 'Bachelor of Commerce',
+                        faculties: [
+                            'Dr. Ramesh Pillai',
+                            'Prof. Anjana Nair',
+                            'Dr. Vikram Reddy',
+                            'Prof. Swati Gupta',
+                            'Dr. Ashok Kumar',
+                            'Prof. Meera Sharma',
+                            'Dr. Sanjiv Verma',
+                            'Prof. Priya Desai'
+                        ]
+                    },
+                    'BBA': {
+                        fullName: 'Bachelor of Business Administration',
+                        faculties: [
+                            'Dr. Harish Kapoor',
+                            'Prof. Neelam Singh',
+                            'Dr. Ravi Tiwari',
+                            'Prof. Deepika Sharma',
+                            'Dr. Anil Mishra',
+                            'Prof. Sunita Rao',
+                            'Dr. Rajiv Nair',
+                            'Prof. Anita Verma'
+                        ]
+                    },
+                    'BA': {
+                        fullName: 'Bachelor of Arts',
+                        faculties: [
+                            'Dr. Mohan Lal',
+                            'Prof. Geeta Sharma',
+                            'Dr. Sunil Pandey',
+                            'Prof. Asha Gupta',
+                            'Dr. Rajesh Verma',
+                            'Prof. Nisha Patel',
+                            'Dr. Vikram Singh',
+                            'Prof. Priya Nair'
+                        ]
+                    }
+                };
+
+                let totalDepts = 0;
+                let totalFaculties = 0;
+                const results = [];
+
+                // Add departments and faculties
+                for (const [deptName, deptData] of Object.entries(departmentsData)) {
+                    const dept = {
+                        id: Storage.generateId(),
+                        name: deptName,
+                        fullName: deptData.fullName,
+                        faculties: []
+                    };
+
+                    // Add faculties to department
+                    deptData.faculties.forEach(facultyName => {
+                        const faculty = {
+                            id: Storage.generateId(),
+                            name: facultyName
+                        };
+                        dept.faculties.push(faculty);
+                        totalFaculties++;
+                    });
+
+                    // Save department
+                    Storage.saveDepartment(dept);
+                    totalDepts++;
+                    results.push(`✅ ${deptName} - ${deptData.faculties.length} faculties added`);
+                }
+
+                // Show success message
+                showStatus('success', 'Departments & Faculties Added Successfully!', results, totalDepts, totalFaculties);
+
+            } catch (error) {
+                showStatus('error', 'Error Adding Departments & Faculties', [error.message]);
+            }
+        }
+
+        function showStatus(type, title, results, depts, faculties) {
+            const statusDiv = document.getElementById('status');
+            let html = `<h3>${title}</h3><ul>`;
+            
+            results.forEach(result => {
+                html += `<li>${result}</li>`;
+            });
+
+            if (depts && faculties) {
+                html += `<li style="margin-top: 10px; font-weight: 600;">Total: ${depts} departments, ${faculties} faculties</li>`;
+            }
+
+            html += '</ul>';
+            statusDiv.innerHTML = html;
+            statusDiv.className = `status show ${type}`;
+        }
+
+        function goBack() {
+            window.location.href = 'admin-dashboard.html';
+        }
+    </script>
+</body>
+</html>

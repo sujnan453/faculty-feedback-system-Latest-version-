@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Survey - Faculty Feedback System</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar admin-sidebar">
+            <div class="sidebar-header">
+                <h2>🔐 Admin Portal</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="admin-dashboard.html" class="nav-item">
+                    <span class="icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="manage-faculties.html" class="nav-item">
+                    <span class="icon">👨‍💼</span>
+                    <span>Manage Faculties</span>
+                </a>
+                <a href="manage-questions.html" class="nav-item">
+                    <span class="icon">❓</span>
+                    <span>Manage Questions</span>
+                </a>
+                <a href="create-survey.html" class="nav-item active">
+                    <span class="icon">➕</span>
+                    <span>Create Survey</span>
+                </a>
+                <a href="view-feedbacks.html" class="nav-item">
+                    <span class="icon">📊</span>
+                    <span>View Feedbacks</span>
+                </a>
+                <a href="visualization.html" class="nav-item">
+                    <span class="icon">📈</span>
+                    <span>Visualizations</span>
+                </a>
+                <a href="reset-data.html" class="nav-item">
+                    <span class="icon">🔄</span>
+                    <span>Reset Data</span>
+                </a>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <span class="icon">🚪</span>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="welcome-section">
+                    <h1>Create New Survey</h1>
+                    <p>Design a faculty feedback survey for students</p>
+                </div>
+            </header>
+
+            <!-- Form Content -->
+            <div class="dashboard-content">
+                <div class="form-container">
+                    <div id="alertMessage" class="alert"></div>
+
+                    <form id="createSurveyForm">
+                        <!-- Basic Information -->
+                        <div class="form-section">
+                            <h3>📋 Select Department</h3>
+                            <div class="form-group">
+                                <label for="department">Department / Class</label>
+                                <select id="department" name="department" onchange="loadFaculties()" required>
+                                    <option value="">Select Department</option>
+                                    <option value="ALL">ALL Departments</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Department and Faculties Section -->
+                        <div class="form-section">
+                            <div class="faculties-header">
+                                <div class="faculties-title">
+                                    <h3>👨‍🏫 Select Faculties</h3>
+                                    <p class="faculties-subtitle">Choose faculty members for this survey</p>
+                                </div>
+                                <span class="faculties-counter">
+                                    <span id="selectedFacultiesCount">0</span> faculty member(s)
+                                </span>
+                            </div>
+                            <div id="facultyCheckboxContainer" class="faculty-checkbox-container">
+                                <!-- Faculties will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Questions Section -->
+                        <div class="form-section">
+                            <div class="questions-header">
+                                <div class="questions-title">
+                                    <h3>❓ Select Questions</h3>
+                                    <p class="questions-subtitle">Choose questions for this survey</p>
+                                </div>
+                                <div class="questions-controls">
+                                    <button type="button" class="btn btn-select-all" onclick="toggleSelectAllQuestions()" title="Select or deselect all questions">
+                                        <span class="select-all-icon">☑️</span>
+                                        <span class="select-all-text">Select All</span>
+                                    </button>
+                                    <span class="questions-counter">
+                                        <span id="selectedCount">0</span> / <span id="totalCount">0</span> selected
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="questions-filter">
+                                <input type="text" id="questionSearch" placeholder="🔍 Search questions..." class="question-search-input">
+                            </div>
+
+                            <div id="questionsContainer" class="questions-container">
+                                <!-- Questions will be loaded here -->
+                            </div>
+
+                            <div class="questions-footer">
+                                <p class="questions-help">
+                                    💡 <a href="manage-questions.html" class="help-link">Create new questions</a> from the Manage Questions section.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Submit Section -->
+                        <div class="form-section">
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Survey</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/mobile-nav.js"></script>
+    <script src="js/create-survey.js"></script>
+</body>
+
+</html>
