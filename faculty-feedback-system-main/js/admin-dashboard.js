@@ -15,6 +15,9 @@ function initializeAdminDashboard() {
     const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
     document.getElementById('userInitials').textContent = initials;
 
+    // Add breadcrumb navigation
+    addBreadcrumb();
+
     // Load statistics
     loadStatistics();
 
@@ -28,6 +31,14 @@ function initializeAdminDashboard() {
             loadRecentSurveys();
         }
     });
+}
+
+function addBreadcrumb() {
+    const breadcrumb = BreadcrumbManager.create([
+        { label: '🏠 Home', href: 'admin-dashboard.html' },
+        { label: 'Dashboard' }
+    ]);
+    BreadcrumbManager.insert(breadcrumb);
 }
 
 function loadStatistics() {
@@ -69,24 +80,20 @@ function loadStatistics() {
     const activeCard = document.querySelector('.stat-active');
 
     if (surveyCard) {
-        surveyCard.title = `Total Surveys: ${surveys.length}\nActive: ${activeSurveys.length}\nInactive: ${inactiveSurveys.length}\nDepartments: ${departments.length}`;
-        surveyCard.style.cursor = 'help';
+        TooltipManager.add(surveyCard, `Total Surveys: ${surveys.length} | Active: ${activeSurveys.length} | Inactive: ${inactiveSurveys.length}`);
     }
 
     if (responseCard) {
         const responseRate = surveys.length > 0 && students.length > 0 ? ((feedbacks.length / (surveys.length * students.length)) * 100).toFixed(1) : 0;
-        responseCard.title = `Total Responses: ${feedbacks.length}\nAverage per Survey: ${avgResponsesPerSurvey}\nResponse Rate: ${responseRate}%`;
-        responseCard.style.cursor = 'help';
+        TooltipManager.add(responseCard, `Total Responses: ${feedbacks.length} | Avg: ${avgResponsesPerSurvey} | Rate: ${responseRate}%`);
     }
 
     if (studentCard) {
-        studentCard.title = `Total Students: ${students.length}\nTotal Admins: ${admins.length}\nTotal Users: ${users.length}`;
-        studentCard.style.cursor = 'help';
+        TooltipManager.add(studentCard, `Students: ${students.length} | Admins: ${admins.length} | Total: ${users.length}`);
     }
 
     if (activeCard) {
-        activeCard.title = `Active Surveys: ${activeSurveys.length}\nInactive Surveys: ${inactiveSurveys.length}\nTotal Departments: ${departments.length}`;
-        activeCard.style.cursor = 'help';
+        TooltipManager.add(activeCard, `Active: ${activeSurveys.length} | Inactive: ${inactiveSurveys.length} | Departments: ${departments.length}`);
     }
 }
 
@@ -116,8 +123,10 @@ function loadRecentSurveys() {
 
     container.innerHTML = '';
 
-    recentSurveys.forEach(survey => {
+    recentSurveys.forEach((survey, index) => {
         const item = createSurveyItem(survey);
+        item.classList.add('stagger-item');
+        item.style.animationDelay = (index * 0.05) + 's';
         container.appendChild(item);
     });
 }
@@ -157,16 +166,27 @@ function createSurveyItem(survey) {
 }
 
 function viewSurveyDetails(surveyId) {
+    // Show loading state
+    notificationManager.info('Loading survey details...', 'Loading', 0);
+    
     // Store the survey ID and redirect to view feedbacks page
     sessionStorage.setItem('selectedSurveyId', surveyId);
-    window.location.href = 'view-feedbacks.html';
+    
+    setTimeout(() => {
+        window.location.href = 'view-feedbacks.html';
+    }, 300);
 }
 
 function deleteSurvey(surveyId) {
     if (confirm('⚠️ Are you sure you want to delete this survey? This will remove it from all students and cannot be undone.')) {
-        Storage.deleteSurvey(surveyId);
-        loadStatistics();
-        loadRecentSurveys();
-        alert('✓ Survey deleted successfully!');
+        LoadingManager.show(document.querySelector('.recent-surveys-section'));
+        
+        setTimeout(() => {
+            Storage.deleteSurvey(surveyId);
+            LoadingManager.hide(document.querySelector('.recent-surveys-section'));
+            loadStatistics();
+            loadRecentSurveys();
+            notificationManager.success('Survey deleted successfully!', 'Success');
+        }, 500);
     }
 }
