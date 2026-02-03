@@ -584,7 +584,13 @@ function displayFacultyRatingsByYear() {
     const container = document.getElementById('facultyRatingsContainer');
     
     if (allFeedbacks.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No feedback data available</p>';
+        container.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(248, 249, 255, 0.3) 100%); border-radius: 12px; border: 2px dashed #e0e0e0;">
+                <span style="font-size: 64px; display: block; margin-bottom: 20px;">📭</span>
+                <h3 style="color: #1a202c; margin: 0 0 10px 0; font-size: 20px; font-weight: 700;">No Data Available</h3>
+                <p style="color: #718096; margin: 0; font-size: 14px;">No feedback data available. Submit surveys to generate reports.</p>
+            </div>
+        `;
         return;
     }
 
@@ -628,33 +634,53 @@ function displayFacultyRatingsByYear() {
     container.innerHTML = '';
     
     if (Object.keys(departmentData).length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No faculty data available</p>';
+        container.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(248, 249, 255, 0.3) 100%); border-radius: 12px; border: 2px dashed #e0e0e0;">
+                <span style="font-size: 64px; display: block; margin-bottom: 20px;">📭</span>
+                <h3 style="color: #1a202c; margin: 0 0 10px 0; font-size: 20px; font-weight: 700;">No Faculty Data</h3>
+                <p style="color: #718096; margin: 0; font-size: 14px;">No faculty ratings available.</p>
+            </div>
+        `;
         return;
     }
 
     // Create sections for each department
-    Object.keys(departmentData).sort().forEach(department => {
+    Object.keys(departmentData).sort().forEach((department, deptIndex) => {
         const facultyInDept = departmentData[department];
         
-        // Department header
+        // Department header with icon
         const deptHeader = document.createElement('div');
-        deptHeader.style.cssText = 'margin-top: 30px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 3px solid #667eea;';
-        deptHeader.innerHTML = `<h3 style="color: #1a202c; margin: 0; font-size: 18px; font-weight: 700;">📚 ${department} Department</h3>`;
+        deptHeader.style.cssText = `
+            margin-top: ${deptIndex === 0 ? '0' : '40px'};
+            margin-bottom: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
+        `;
+        deptHeader.innerHTML = `
+            <h3 style="margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 24px;">📚</span>
+                ${department} Department
+            </h3>
+            <p style="margin: 8px 0 0 0; font-size: 13px; opacity: 0.9;">Faculty performance metrics by academic year</p>
+        `;
         container.appendChild(deptHeader);
 
         // Create table for this department
         const table = document.createElement('div');
-        table.style.cssText = 'overflow-x: auto; margin-bottom: 20px;';
+        table.style.cssText = 'overflow-x: auto; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);';
         
         let html = `
-            <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <table style="width: 100%; border-collapse: collapse; background: white;">
                 <thead>
-                    <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                        <th style="padding: 15px; text-align: left; font-weight: 700; border-right: 1px solid rgba(255,255,255,0.2);">Faculty Name</th>
-                        <th style="padding: 15px; text-align: center; font-weight: 700; border-right: 1px solid rgba(255,255,255,0.2);">1st Year Avg</th>
-                        <th style="padding: 15px; text-align: center; font-weight: 700; border-right: 1px solid rgba(255,255,255,0.2);">2nd Year Avg</th>
-                        <th style="padding: 15px; text-align: center; font-weight: 700; border-right: 1px solid rgba(255,255,255,0.2);">3rd Year Avg</th>
-                        <th style="padding: 15px; text-align: center; font-weight: 700;">Combined Avg</th>
+                    <tr style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(109, 40, 217, 0.05) 100%); border-bottom: 2px solid #7c3aed;">
+                        <th style="padding: 16px 20px; text-align: left; font-weight: 700; color: #1a202c; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Faculty Name</th>
+                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: #1a202c; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">1st Year</th>
+                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: #1a202c; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">2nd Year</th>
+                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: #1a202c; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">3rd Year</th>
+                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: #1a202c; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Overall Avg</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -678,29 +704,46 @@ function displayFacultyRatingsByYear() {
                 : '-';
 
             const bgColor = index % 2 === 0 ? '#ffffff' : '#f8f9ff';
-            const borderBottom = '1px solid #e0e0e0';
+            const borderBottom = '1px solid #e8e8e8';
+            
+            // Determine rating color based on value
+            const getRatingColor = (rating) => {
+                if (rating === '-') return '#ccc';
+                const val = parseFloat(rating);
+                if (val >= 4) return '#059669';
+                if (val >= 3) return '#d97706';
+                return '#dc2626';
+            };
+            
+            const getRatingBg = (rating) => {
+                if (rating === '-') return 'rgba(200, 200, 200, 0.1)';
+                const val = parseFloat(rating);
+                if (val >= 4) return 'rgba(5, 150, 105, 0.1)';
+                if (val >= 3) return 'rgba(217, 119, 6, 0.1)';
+                return 'rgba(220, 38, 38, 0.1)';
+            };
 
             html += `
-                <tr style="background: ${bgColor}; border-bottom: ${borderBottom};">
-                    <td style="padding: 15px; text-align: left; font-weight: 600; color: #1a202c; border-right: 1px solid #e0e0e0;">👨‍🏫 ${faculty.name}</td>
-                    <td style="padding: 15px; text-align: center; color: #667eea; font-weight: 600; border-right: 1px solid #e0e0e0;">
-                        <span style="background: rgba(102, 126, 234, 0.1); padding: 6px 12px; border-radius: 20px; display: inline-block;">
-                            ${year1Avg} / 10
+                <tr style="background: ${bgColor}; border-bottom: ${borderBottom}; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(124, 58, 237, 0.05)';" onmouseout="this.style.background='${bgColor}';">
+                    <td style="padding: 16px 20px; text-align: left; font-weight: 600; color: #1a202c; font-size: 14px;">👨‍🏫 ${faculty.name}</td>
+                    <td style="padding: 16px 12px; text-align: center;">
+                        <span style="background: ${getRatingBg(year1Avg)}; color: ${getRatingColor(year1Avg)}; padding: 8px 12px; border-radius: 6px; display: inline-block; font-weight: 700; font-size: 13px; min-width: 50px;">
+                            ${year1Avg === '-' ? '-' : year1Avg}
                         </span>
                     </td>
-                    <td style="padding: 15px; text-align: center; color: #667eea; font-weight: 600; border-right: 1px solid #e0e0e0;">
-                        <span style="background: rgba(102, 126, 234, 0.1); padding: 6px 12px; border-radius: 20px; display: inline-block;">
-                            ${year2Avg} / 10
+                    <td style="padding: 16px 12px; text-align: center;">
+                        <span style="background: ${getRatingBg(year2Avg)}; color: ${getRatingColor(year2Avg)}; padding: 8px 12px; border-radius: 6px; display: inline-block; font-weight: 700; font-size: 13px; min-width: 50px;">
+                            ${year2Avg === '-' ? '-' : year2Avg}
                         </span>
                     </td>
-                    <td style="padding: 15px; text-align: center; color: #667eea; font-weight: 600; border-right: 1px solid #e0e0e0;">
-                        <span style="background: rgba(102, 126, 234, 0.1); padding: 6px 12px; border-radius: 20px; display: inline-block;">
-                            ${year3Avg} / 10
+                    <td style="padding: 16px 12px; text-align: center;">
+                        <span style="background: ${getRatingBg(year3Avg)}; color: ${getRatingColor(year3Avg)}; padding: 8px 12px; border-radius: 6px; display: inline-block; font-weight: 700; font-size: 13px; min-width: 50px;">
+                            ${year3Avg === '-' ? '-' : year3Avg}
                         </span>
                     </td>
-                    <td style="padding: 15px; text-align: center; color: #11998e; font-weight: 700; font-size: 16px;">
-                        <span style="background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%); padding: 8px 14px; border-radius: 20px; display: inline-block;">
-                            ${combinedAvg} / 10
+                    <td style="padding: 16px 12px; text-align: center;">
+                        <span style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(109, 40, 217, 0.1) 100%); color: #7c3aed; padding: 8px 14px; border-radius: 6px; display: inline-block; font-weight: 700; font-size: 14px; min-width: 60px; border: 2px solid #7c3aed;">
+                            ${combinedAvg === '-' ? '-' : combinedAvg}
                         </span>
                     </td>
                 </tr>

@@ -300,7 +300,7 @@ function updateStatistics(feedbacks, selectedFaculty) {
         totalQuestions = feedbacks[0].responses.length;
     }
 
-    const averageRating = ratingCount > 0 ? (totalRatings / ratingCount).toFixed(1) : 0;
+    const averageRating = ratingCount > 0 ? (totalRatings / ratingCount).toFixed(2) : 0;
 
     document.getElementById('totalFeedbacks').textContent = totalFeedbacks;
     document.getElementById('averageRating').textContent = averageRating + ' / 10';
@@ -344,9 +344,9 @@ function updateQuickStats(facultyStats, deptAverage) {
     });
 
     document.getElementById('highestRatedTeacher').textContent = highestTeacher;
-    document.getElementById('highestRatedScore').textContent = highestScore.toFixed(1) + '/10';
+    document.getElementById('highestRatedScore').textContent = highestScore.toFixed(2) + '/10';
     document.getElementById('lowestRatedTeacher').textContent = lowestTeacher;
-    document.getElementById('lowestRatedScore').textContent = lowestScore.toFixed(1) + '/10';
+    document.getElementById('lowestRatedScore').textContent = lowestScore.toFixed(2) + '/10';
     document.getElementById('mostFeedbackTeacher').textContent = mostFeedbackTeacher;
     document.getElementById('mostFeedbackCount').textContent = mostFeedbackCount + ' response' + (mostFeedbackCount !== 1 ? 's' : '');
     document.getElementById('deptAvgRating').textContent = deptAverage;
@@ -389,7 +389,7 @@ function displayResults(feedbacks, selectedFaculty) {
     
     displayFaculties.forEach(([facultyId, faculty]) => {
         const avgRating = faculty.ratings.length > 0 
-            ? (faculty.ratings.reduce((a, b) => a + b, 0) / faculty.ratings.length).toFixed(1)
+            ? (faculty.ratings.reduce((a, b) => a + b, 0) / faculty.ratings.length).toFixed(2)
             : 0;
 
         const card = document.createElement('div');

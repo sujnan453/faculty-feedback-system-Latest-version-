@@ -63,7 +63,7 @@ function loadStatistics() {
     document.getElementById('inactiveSurveysCount').textContent = inactiveSurveys.length;
 
     // Response Card Details
-    const avgResponsesPerSurvey = surveys.length > 0 ? (feedbacks.length / surveys.length).toFixed(1) : 0;
+    const avgResponsesPerSurvey = surveys.length > 0 ? (feedbacks.length / surveys.length).toFixed(2) : 0;
     document.getElementById('avgResponsesPerSurvey').textContent = avgResponsesPerSurvey;
 
     // Student Card Details
@@ -84,7 +84,7 @@ function loadStatistics() {
     }
 
     if (responseCard) {
-        const responseRate = surveys.length > 0 && students.length > 0 ? ((feedbacks.length / (surveys.length * students.length)) * 100).toFixed(1) : 0;
+        const responseRate = surveys.length > 0 && students.length > 0 ? ((feedbacks.length / (surveys.length * students.length)) * 100).toFixed(2) : 0;
         TooltipManager.add(responseCard, `Total Responses: ${feedbacks.length} | Avg: ${avgResponsesPerSurvey} | Rate: ${responseRate}%`);
     }
 
