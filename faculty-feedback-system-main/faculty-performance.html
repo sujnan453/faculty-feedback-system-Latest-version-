@@ -140,6 +140,157 @@
             flex-wrap: wrap;
         }
 
+        .table-header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-print::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-print:hover::before {
+            left: 100%;
+        }
+
+        .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-print:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(124, 58, 237, 0.2);
+        }
+
+        .btn-csv {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(17, 153, 142, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-csv::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-csv:hover::before {
+            left: 100%;
+        }
+
+        .btn-csv:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
+        }
+
+        .btn-csv:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(17, 153, 142, 0.2);
+        }
+
+        @media print {
+            .filters-section,
+            .stats-summary,
+            .table-header-actions,
+            .btn-print,
+            .sidebar,
+            .top-bar,
+            .dashboard-wrapper > * {
+                display: none !important;
+            }
+
+            .performance-table-container {
+                box-shadow: none;
+                border: none;
+            }
+
+            .performance-table {
+                font-size: 11px;
+            }
+
+            .performance-table th,
+            .performance-table td {
+                padding: 8px 6px;
+                border: 1px solid #333;
+            }
+
+            .performance-table thead {
+                background: #f0f0f0 !important;
+                color: #000 !important;
+            }
+
+            .performance-table tbody tr:hover {
+                background: white !important;
+            }
+
+            .main-content {
+                margin: 0;
+                padding: 20px;
+            }
+
+            .dashboard-content {
+                margin: 0;
+                padding: 0;
+            }
+
+            .performance-container {
+                max-width: 100%;
+                margin: 0;
+            }
+
+            body {
+                background: white;
+            }
+
+            .performance-table-container {
+                page-break-inside: avoid;
+            }
+        }
+
         .header-stat {
             display: flex;
             align-items: center;
@@ -782,10 +933,6 @@
                     <span class="icon">➕</span>
                     <span>Create Survey</span>
                 </a>
-                <a href="view-feedbacks.html" class="nav-item">
-                    <span class="icon">📊</span>
-                    <span>View Feedbacks</span>
-                </a>
                 <a href="visualization.html" class="nav-item">
                     <span class="icon">📈</span>
                     <span>Visualizations</span>
@@ -813,6 +960,10 @@
                     <h1>Faculty Performance</h1>
                     <p>View and analyze faculty ratings and feedback data</p>
                 </div>
+                <button class="btn-print" onclick="printPerformanceTable()" title="Print performance report" style="margin-right: 20px;">
+                    <span>🖨️</span>
+                    <span>Print</span>
+                </button>
             </header>
 
             <!-- Dashboard Content -->
@@ -874,14 +1025,26 @@
                                 <span style="font-size: 24px;">📊</span>
                                 <h3>Faculty Performance Data</h3>
                             </div>
-                            <div class="table-header-info">
-                                <div class="header-stat">
-                                    <span>Total Records:</span>
-                                    <span class="header-stat-value" id="headerTotalRecords">0</span>
+                            <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap; width: 100%; justify-content: space-between;">
+                                <div class="table-header-info">
+                                    <div class="header-stat">
+                                        <span>Total Records:</span>
+                                        <span class="header-stat-value" id="headerTotalRecords">0</span>
+                                    </div>
+                                    <div class="header-stat">
+                                        <span>Avg Rating:</span>
+                                        <span class="header-stat-value" id="headerAvgRating">0</span>
+                                    </div>
                                 </div>
-                                <div class="header-stat">
-                                    <span>Avg Rating:</span>
-                                    <span class="header-stat-value" id="headerAvgRating">0</span>
+                                <div class="table-header-actions">
+                                    <button class="btn-csv" onclick="exportPerformanceToCSV()" title="Export to CSV">
+                                        <span>📊</span>
+                                        <span>CSV</span>
+                                    </button>
+                                    <button class="btn-print" onclick="printPerformanceTable()" title="Print performance report">
+                                        <span>🖨️</span>
+                                        <span>Print</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1196,6 +1359,187 @@
             document.getElementById('deptFilter').value = '';
             document.getElementById('facultyNameFilter').value = '';
             loadPerformanceData();
+        }
+
+        function printPerformanceTable() {
+            // Get current filters
+            const deptFilter = document.getElementById('deptFilter').value;
+            const facultyName = document.getElementById('facultyNameFilter').value;
+            
+            // Create print window
+            const printWindow = window.open('', '', 'height=600,width=900');
+            
+            // Get table HTML
+            const table = document.getElementById('performanceTable').outerHTML;
+            
+            // Create print document
+            const printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Faculty Performance Report</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            margin: 20px;
+                            background: white;
+                        }
+                        .print-header {
+                            text-align: center;
+                            margin-bottom: 30px;
+                            border-bottom: 2px solid #7c3aed;
+                            padding-bottom: 20px;
+                        }
+                        .print-header h1 {
+                            margin: 0 0 10px 0;
+                            color: #1a202c;
+                            font-size: 24px;
+                        }
+                        .print-header p {
+                            margin: 5px 0;
+                            color: #718096;
+                            font-size: 13px;
+                        }
+                        .print-filters {
+                            margin-bottom: 20px;
+                            padding: 15px;
+                            background: #f8f9ff;
+                            border-radius: 8px;
+                            font-size: 13px;
+                        }
+                        .print-filters p {
+                            margin: 5px 0;
+                            color: #1a202c;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                            font-size: 11px;
+                        }
+                        th {
+                            background: #7c3aed;
+                            color: white;
+                            padding: 10px;
+                            text-align: center;
+                            font-weight: 700;
+                            border: 1px solid #7c3aed;
+                        }
+                        td {
+                            padding: 8px;
+                            border: 1px solid #e0e0e0;
+                            text-align: center;
+                        }
+                        td:first-child {
+                            text-align: left;
+                        }
+                        tr:nth-child(even) {
+                            background: #f8f9ff;
+                        }
+                        .avg-row {
+                            background: #f0f0f0;
+                            font-weight: 700;
+                            border-top: 2px solid #7c3aed;
+                        }
+                        .print-footer {
+                            margin-top: 30px;
+                            text-align: center;
+                            font-size: 12px;
+                            color: #718096;
+                            border-top: 1px solid #e0e0e0;
+                            padding-top: 15px;
+                        }
+                        @media print {
+                            body {
+                                margin: 0;
+                            }
+                            .print-header {
+                                page-break-after: avoid;
+                            }
+                            table {
+                                page-break-inside: avoid;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-header">
+                        <h1>📊 Faculty Performance Report</h1>
+                        <p>Generated on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                    </div>
+                    
+                    <div class="print-filters">
+                        <p><strong>Filters Applied:</strong></p>
+                        <p>Department: ${deptFilter || 'All Departments'}</p>
+                        <p>Faculty: ${facultyName || 'All Faculty'}</p>
+                    </div>
+                    
+                    ${table}
+                    
+                    <div class="print-footer">
+                        <p>This is an automatically generated report from the Faculty Feedback System</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            
+            // Wait for content to load then print
+            setTimeout(() => {
+                printWindow.print();
+            }, 250);
+        }
+
+        function exportPerformanceToCSV() {
+            const deptFilter = document.getElementById('deptFilter').value;
+            const facultyName = document.getElementById('facultyNameFilter').value;
+            
+            // Get the table
+            const table = document.getElementById('performanceTable');
+            let csv = [];
+            
+            // Add header info
+            csv.push('Faculty Performance Report');
+            csv.push(`Generated on: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`);
+            csv.push('');
+            csv.push(`Department Filter: ${deptFilter || 'All Departments'}`);
+            csv.push(`Faculty Filter: ${facultyName || 'All Faculty'}`);
+            csv.push('');
+            
+            // Add table headers
+            const headers = [];
+            table.querySelectorAll('thead th').forEach(th => {
+                headers.push('"' + th.textContent.trim() + '"');
+            });
+            csv.push(headers.join(','));
+            
+            // Add table rows
+            table.querySelectorAll('tbody tr').forEach(tr => {
+                const row = [];
+                tr.querySelectorAll('td').forEach(td => {
+                    row.push('"' + td.textContent.trim() + '"');
+                });
+                csv.push(row.join(','));
+            });
+            
+            // Create blob and download
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Faculty_Performance_${new Date().getTime()}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showAlert('✅ CSV exported successfully!', 'success');
         }
 
         // Load data on page load

@@ -169,11 +169,11 @@ function viewSurveyDetails(surveyId) {
     // Show loading state
     notificationManager.info('Loading survey details...', 'Loading', 0);
     
-    // Store the survey ID and redirect to view feedbacks page
+    // Store the survey ID and redirect to faculty performance page
     sessionStorage.setItem('selectedSurveyId', surveyId);
     
     setTimeout(() => {
-        window.location.href = 'view-feedbacks.html';
+        window.location.href = 'faculty-performance.html';
     }, 300);
 }
 

@@ -208,7 +208,17 @@ function handleAddQuestion(e) {
             localStorage.setItem('questions', JSON.stringify(questions));
             
             showAlert('✅ Question updated successfully!', 'success');
+            
+            // Clear form and reset style
+            questionInput.value = '';
+            questionInput.style.borderColor = '';
+            
+            // Cancel edit mode
             cancelEdit();
+            
+            // Reload questions to show updated list
+            loadQuestions();
+            return;
         }
     } else {
         // Create new question

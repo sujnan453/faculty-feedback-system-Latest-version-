@@ -26,10 +26,10 @@ function loadAvailableDepartmentsDropdown() {
     const departments = Storage.getDepartments();
     const dropdown = document.getElementById('departmentDropdown');
     
-    // Clear existing options except the first one
-    dropdown.innerHTML = '<option value="">-- Select a Department --</option>';
+    // Clear existing options
+    dropdown.innerHTML = '<option value="">-- All Departments --</option>';
     
-    // Add departments to dropdown
+    // Add all departments to dropdown
     departments.forEach(dept => {
         const option = document.createElement('option');
         option.value = dept.name;
@@ -45,9 +45,12 @@ function onDepartmentChange() {
     const selectedDept = dropdown.value;
     
     if (!selectedDept) {
-        selectedDepartments = [];
+        // "All Departments" selected
+        const allDepts = Storage.getDepartments();
+        selectedDepartments = allDepts.map(d => d.name);
         updateSelectedDisplay();
         updateButtonStates();
+        showAlert('All departments selected!', 'success');
         return;
     }
     
@@ -55,7 +58,7 @@ function onDepartmentChange() {
     selectedDepartments = [selectedDept];
     updateSelectedDisplay();
     updateButtonStates();
-    showAlert(`Department "${selectedDept}" selected!`, 'success');
+    showAlert(`${selectedDept} selected!`, 'success');
 }
 
 function removeDepartment(dept) {
@@ -232,7 +235,9 @@ function createPieChart() {
                     },
                     title: {
                         display: true,
-                        text: 'Average Ratings by Department & Year',
+                        text: selectedDepartments.length === Storage.getDepartments().length 
+                            ? 'Average Ratings - All Departments'
+                            : 'Average Ratings by Department & Year',
                         font: {
                             size: 16,
                             weight: 'bold'
@@ -310,7 +315,9 @@ function createHistogram() {
                     },
                     title: {
                         display: true,
-                        text: 'Average Ratings by Department & Year',
+                        text: selectedDepartments.length === Storage.getDepartments().length 
+                            ? 'Average Ratings - All Departments'
+                            : 'Average Ratings by Department & Year',
                         font: {
                             size: 16,
                             weight: 'bold'
@@ -438,7 +445,9 @@ function createLineChart() {
                     },
                     title: {
                         display: true,
-                        text: 'Average Ratings Trend by Department & Year',
+                        text: selectedDepartments.length === Storage.getDepartments().length 
+                            ? 'Average Ratings Trend - All Departments'
+                            : 'Average Ratings Trend by Department & Year',
                         font: {
                             size: 16,
                             weight: 'bold'
