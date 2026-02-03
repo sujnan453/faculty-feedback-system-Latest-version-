@@ -88,7 +88,26 @@ function updateButtonStates() {
 }
 
 function calculateDepartmentYearStats() {
-    const allFeedbacks = Storage.getFeedbacks();
+    let allFeedbacks = Storage.getFeedbacks();
+    
+    // VALIDATION: Filter out orphaned feedbacks
+    allFeedbacks = allFeedbacks.filter(feedback => {
+        // Check if survey exists
+        const survey = Storage.getSurveyById(feedback.surveyId);
+        if (!survey) return false;
+
+        // Check if department exists
+        const department = Storage.getDepartmentByName(feedback.studentDepartment);
+        if (!department) return false;
+
+        // Check if all faculty members still exist
+        const departmentFacultyIds = (department.faculties || []).map(f => f.id);
+        const invalidFaculty = feedback.selectedTeachers.some(t => !departmentFacultyIds.includes(t.id));
+        if (invalidFaculty) return false;
+
+        return true;
+    });
+
     const stats = {};
 
     selectedDepartments.forEach(dept => {

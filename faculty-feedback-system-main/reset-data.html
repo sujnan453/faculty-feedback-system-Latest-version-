@@ -491,6 +491,7 @@
                 <li>All student accounts</li>
                 <li>All surveys</li>
                 <li>All student feedbacks</li>
+                <li>All faculty performance data</li>
             </ul>
         </div>
 
@@ -556,7 +557,7 @@
         }
 
         function resetData() {
-            const confirmed = confirm('⚠️ FINAL CONFIRMATION: Are you absolutely sure? This will permanently delete ALL student accounts, surveys, and feedbacks!');
+            const confirmed = confirm('⚠️ FINAL CONFIRMATION: Are you absolutely sure? This will permanently delete ALL student accounts, surveys, feedbacks, and faculty performance data!');
 
             if (confirmed) {
                 showLoadingSpinner(true);
@@ -566,8 +567,12 @@
                     setTimeout(() => {
                         // Delete all students and surveys/feedbacks
                         Storage.resetStudentData();
+                        
+                        // Clear faculty performance data by clearing localStorage
+                        localStorage.removeItem('facultyPerformanceData');
+                        
                         showLoadingSpinner(false);
-                        showResult('✅ All students deleted! Surveys and feedbacks cleared. Only admin accounts remain. Redirecting...', 'success');
+                        showResult('✅ All students deleted! Surveys, feedbacks, and faculty performance data cleared. Only admin accounts remain. Redirecting...', 'success');
 
                         // Reset statistics
                         document.getElementById('studentCount').textContent = '0';

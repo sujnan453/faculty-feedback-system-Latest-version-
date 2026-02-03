@@ -10,13 +10,6 @@ if (!currentUser) {
 function initializeManageFaculties() {
     loadDepartments();
     setupModalHandlers();
-    
-    // Refresh data when page becomes visible (user returns to tab)
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) {
-            loadDepartments();
-        }
-    });
 }
 
 function setupModalHandlers() {
@@ -152,6 +145,8 @@ function loadDepartments() {
 function createDepartmentCard(department) {
     const card = document.createElement('div');
     card.className = 'department-card';
+    card.setAttribute('role', 'region');
+    card.setAttribute('aria-label', `${department.name} department with ${department.faculties ? department.faculties.length : 0} faculties`);
 
     const header = document.createElement('div');
     header.className = 'department-header';
@@ -161,8 +156,8 @@ function createDepartmentCard(department) {
             <p>${department.fullName}</p>
         </div>
         <div style="display: flex; gap: 8px;">
-            <button class="btn-edit" onclick="editDepartment('${department.id}', '${department.name}', '${department.fullName}')" title="Edit Department">✏️</button>
-            <button class="btn-remove" onclick="deleteDepartment('${department.id}', '${department.name}')" title="Delete Department">🗑️</button>
+            <button class="btn-edit" onclick="editDepartment('${department.id}', '${department.name}', '${department.fullName}')" title="Edit Department" aria-label="Edit ${department.name} department">✏️</button>
+            <button class="btn-remove" onclick="deleteDepartment('${department.id}', '${department.name}')" title="Delete Department" aria-label="Delete ${department.name} department">🗑️</button>
         </div>
     `;
 
@@ -171,19 +166,23 @@ function createDepartmentCard(department) {
     // Faculty list
     const facultyList = document.createElement('div');
     facultyList.className = 'faculty-list';
+    facultyList.setAttribute('role', 'list');
+    facultyList.setAttribute('aria-label', `Faculties in ${department.name} department`);
 
     if (!department.faculties || department.faculties.length === 0) {
-        facultyList.innerHTML = '<div class="empty-faculty">📭 No faculties added yet</div>';
+        facultyList.innerHTML = '<div class="empty-faculty" role="status" aria-live="polite">📭 No faculties added yet</div>';
     } else {
-        department.faculties.forEach(faculty => {
+        department.faculties.forEach((faculty, index) => {
             const item = document.createElement('div');
             item.className = 'faculty-item';
+            item.setAttribute('role', 'listitem');
+            item.setAttribute('aria-label', `Faculty ${index + 1}: ${faculty.name}`);
             item.innerHTML = `
                 <div class="faculty-info">
                     <div class="faculty-name">👨‍🏫 ${faculty.name}</div>
                 </div>
                 <div class="faculty-actions">
-                    <button class="btn-remove" onclick="removeFaculty('${department.id}', '${faculty.id}')">Delete</button>
+                    <button class="btn-remove" onclick="removeFaculty('${department.id}', '${faculty.id}')" aria-label="Remove ${faculty.name} from ${department.name}">Delete</button>
                 </div>
             `;
             facultyList.appendChild(item);
@@ -195,10 +194,13 @@ function createDepartmentCard(department) {
     // Add faculty form
     const form = document.createElement('div');
     form.className = 'add-faculty-form';
+    form.setAttribute('role', 'region');
+    form.setAttribute('aria-label', `Add faculty to ${department.name} department`);
     form.innerHTML = `
         <div class="form-row">
-            <input type="text" id="facultyName-${department.id}" placeholder="👨‍🏫 Faculty Name" />
-            <button class="btn-add-faculty" onclick="addFacultyToDept('${department.id}')">Add Faculty</button>
+            <input type="text" id="facultyName-${department.id}" placeholder="👨‍🏫 Faculty Name" aria-label="Faculty name input for ${department.name}" aria-describedby="facultyNameHelp-${department.id}" />
+            <span id="facultyNameHelp-${department.id}" class="sr-only">Enter the name of the faculty member to add to this department</span>
+            <button class="btn-add-faculty" onclick="addFacultyToDept('${department.id}')" aria-label="Add faculty to ${department.name} department">Add Faculty</button>
         </div>
     `;
 

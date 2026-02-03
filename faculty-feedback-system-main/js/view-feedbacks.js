@@ -15,7 +15,7 @@ if (!currentUser) {
 }
 
 function initializeViewFeedbacks() {
-    loadAllFeedbacks();
+    allFeedbacks = loadAllFeedbacks();
     loadDepartmentOptions();
     // Start with empty state - no filters applied
     showEmptyState();
@@ -23,7 +23,7 @@ function initializeViewFeedbacks() {
     // Refresh data when page becomes visible (user returns to tab)
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
-            loadAllFeedbacks();
+            allFeedbacks = loadAllFeedbacks();
             loadDepartmentOptions();
         }
     });
@@ -49,7 +49,36 @@ function loadDepartmentOptions() {
 }
 
 function loadAllFeedbacks() {
-    allFeedbacks = Storage.getFeedbacks();
+    let allFeedbacks = Storage.getFeedbacks();
+    
+    // VALIDATION: Filter out orphaned feedbacks (where survey/department/faculty no longer exist)
+    allFeedbacks = allFeedbacks.filter(feedback => {
+        // Check if survey exists
+        const survey = Storage.getSurveyById(feedback.surveyId);
+        if (!survey) {
+            console.warn(`⚠️ Orphaned feedback detected: Survey ${feedback.surveyId} no longer exists`);
+            return false;
+        }
+
+        // Check if department exists
+        const department = Storage.getDepartmentByName(feedback.studentDepartment);
+        if (!department) {
+            console.warn(`⚠️ Orphaned feedback detected: Department ${feedback.studentDepartment} no longer exists`);
+            return false;
+        }
+
+        // Check if all faculty members still exist
+        const departmentFacultyIds = (department.faculties || []).map(f => f.id);
+        const invalidFaculty = feedback.selectedTeachers.some(t => !departmentFacultyIds.includes(t.id));
+        if (invalidFaculty) {
+            console.warn(`⚠️ Orphaned feedback detected: Some faculty members no longer exist in ${feedback.studentDepartment}`);
+            return false;
+        }
+
+        return true;
+    });
+
+    return allFeedbacks;
 }
 
 function applyFilters() {

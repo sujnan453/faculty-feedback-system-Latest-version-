@@ -459,6 +459,39 @@ function submitSurvey() {
         return;
     }
 
+    // VALIDATION: Verify survey still exists
+    const surveyExists = Storage.getSurveyById(currentSurvey.id);
+    if (!surveyExists) {
+        alert('❌ Error: Survey no longer exists. Please contact administrator.');
+        window.location.href = 'student-dashboard.html';
+        return;
+    }
+
+    // VALIDATION: Verify all selected teachers still exist in department
+    const department = Storage.getDepartmentByName(currentUser_Survey.department);
+    if (!department) {
+        alert('❌ Error: Your department no longer exists. Please contact administrator.');
+        window.location.href = 'student-dashboard.html';
+        return;
+    }
+
+    const departmentFacultyIds = (department.faculties || []).map(f => f.id);
+    const invalidTeachers = selectedTeachers.filter(t => !departmentFacultyIds.includes(t.id));
+    if (invalidTeachers.length > 0) {
+        alert(`❌ Error: Some selected faculty members no longer exist in your department: ${invalidTeachers.map(t => t.name).join(', ')}`);
+        window.location.href = 'student-dashboard.html';
+        return;
+    }
+
+    // VALIDATION: Verify all questions still exist
+    const questionIds = currentSurvey.questions.map(q => q.id);
+    const invalidQuestions = Object.keys(ratings).filter(qId => !questionIds.includes(qId));
+    if (invalidQuestions.length > 0) {
+        alert('❌ Error: Survey questions have been modified. Please retake the survey.');
+        window.location.href = 'student-dashboard.html';
+        return;
+    }
+
     // Create feedback responses
     const responses = [];
     
@@ -474,7 +507,7 @@ function submitSurvey() {
         });
     });
 
-    // Create feedback object
+    // Create feedback object with validation metadata
     const feedback = {
         id: Storage.generateId(),
         surveyId: currentSurvey.id,
@@ -485,7 +518,12 @@ function submitSurvey() {
         studentDepartment: currentUser_Survey.department,
         selectedTeachers: selectedTeachers,
         responses: responses,
-        submittedAt: new Date().toISOString()
+        submittedAt: new Date().toISOString(),
+        // Validation metadata for admin pages
+        _validated: true,
+        _surveyExists: true,
+        _departmentExists: true,
+        _facultiesExist: true
     };
 
     // Save feedback

@@ -25,6 +25,9 @@ function initializeCreateSurvey() {
     // Form submission
     document.getElementById('createSurveyForm').addEventListener('submit', handleSurveySubmit);
     
+    // Setup progress bar tracking
+    setupProgressBar();
+    
     // Refresh data when page becomes visible (user returns to tab)
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
@@ -32,6 +35,32 @@ function initializeCreateSurvey() {
             loadAvailableQuestions();
         }
     });
+}
+
+function setupProgressBar() {
+    // Track department selection
+    const departmentSelect = document.getElementById('department');
+    if (departmentSelect) {
+        departmentSelect.addEventListener('change', updateProgressBar);
+    }
+
+    // Track faculty selection
+    const facultyContainer = document.getElementById('facultyCheckboxContainer');
+    if (facultyContainer) {
+        const observer = new MutationObserver(() => {
+            updateProgressBar();
+        });
+        observer.observe(facultyContainer, { childList: true, subtree: true });
+    }
+
+    // Track question selection
+    const questionsContainer = document.getElementById('questionsContainer');
+    if (questionsContainer) {
+        const observer = new MutationObserver(() => {
+            updateProgressBar();
+        });
+        observer.observe(questionsContainer, { childList: true, subtree: true });
+    }
 }
 
 function loadDepartments() {
@@ -71,23 +100,23 @@ function loadFaculties() {
         });
 
         container.innerHTML = `
-            <div style="background: linear-gradient(135deg, rgba(17, 153, 142, 0.08) 0%, rgba(56, 239, 125, 0.05) 100%); border: 2px solid rgba(17, 153, 142, 0.2); border-radius: 12px; padding: 20px;">
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                    <div style="font-size: 2rem;">🌍</div>
-                    <div>
-                        <h3 style="color: #1a202c; margin: 0; font-size: 1.1rem; font-weight: 700;">All Departments Selected</h3>
-                        <p style="color: #4a5568; margin: 5px 0 0 0; font-size: 0.9rem;">Survey will be created for all departments</p>
+            <div class="all-departments-card" style="background: linear-gradient(135deg, rgba(17, 153, 142, 0.08) 0%, rgba(56, 239, 125, 0.05) 100%); border: 2px solid rgba(17, 153, 142, 0.2); border-radius: 12px; padding: 24px; width: 100%;">
+                <div style="display: flex; align-items: flex-start; gap: 24px; margin-bottom: 24px;">
+                    <div style="font-size: 3.5rem; flex-shrink: 0; line-height: 1;">🌍</div>
+                    <div style="flex: 1;">
+                        <h3 style="color: #1a202c; margin: 0 0 8px 0; font-size: 1.4rem; font-weight: 700; line-height: 1.3;">All Departments Selected</h3>
+                        <p style="color: #4a5568; margin: 0; font-size: 0.95rem; line-height: 1.5;">Survey will be created for all departments</p>
                     </div>
                 </div>
 
-                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; border: 1px solid rgba(17, 153, 142, 0.2);">
-                    <div style="font-size: 2rem; font-weight: 700; color: #11998e;">${totalFaculties}</div>
-                    <div style="color: #4a5568; font-size: 0.9rem; font-weight: 600;">Total Faculty Members</div>
+                <div style="background: white; padding: 24px; border-radius: 10px; margin-bottom: 16px; text-align: center; border: 1px solid rgba(17, 153, 142, 0.2); box-shadow: 0 2px 8px rgba(17, 153, 142, 0.1);">
+                    <div style="font-size: 3rem; font-weight: 700; color: #11998e; margin-bottom: 8px;">${totalFaculties}</div>
+                    <div style="color: #4a5568; font-size: 0.95rem; font-weight: 600;">Total Faculty Members</div>
                 </div>
 
-                <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #11998e;">
-                    <p style="color: #4a5568; margin: 0; font-size: 0.9rem;">
-                        <strong>Departments:</strong> ${deptList.join(' • ')}
+                <div style="background: white; padding: 18px; border-radius: 10px; border-left: 5px solid #11998e; box-shadow: 0 2px 8px rgba(17, 153, 142, 0.1);">
+                    <p style="color: #1a202c; margin: 0; font-size: 0.95rem; line-height: 1.6; font-weight: 600;">
+                        <strong style="color: #1a202c;">Departments:</strong> <span style="color: #4a5568;">${deptList.join(' • ')}</span>
                     </p>
                 </div>
             </div>
@@ -121,6 +150,12 @@ function loadFaculties() {
             </div>
         `;
         
+        // Add click handler to toggle selection
+        facultyItem.addEventListener('click', function() {
+            this.classList.toggle('selected');
+            updateProgressBar();
+        });
+        
         container.appendChild(facultyItem);
     });
 }
@@ -130,6 +165,39 @@ function updateFacultiesCounter(count) {
     if (counter) {
         counter.textContent = count;
     }
+}
+
+function updateProgressBar() {
+    const progressBarFill = document.getElementById('progressBarFill');
+    if (!progressBarFill) return;
+
+    const departmentId = document.getElementById('department').value;
+    const selectedFaculties = document.querySelectorAll('.faculty-list-item.selected').length;
+    const selectedQuestions = selectedQuestionIds.length;
+
+    let progress = 0;
+
+    // Step 1: Department selected (25%)
+    if (departmentId) {
+        progress = 25;
+    }
+
+    // Step 2: Faculties selected (50%)
+    if (departmentId === 'ALL' || selectedFaculties > 0) {
+        progress = 50;
+    }
+
+    // Step 3: Questions selected (75%)
+    if (selectedQuestions > 0) {
+        progress = 75;
+    }
+
+    // Step 4: Ready to submit (100%)
+    if (departmentId && (departmentId === 'ALL' || selectedFaculties > 0) && selectedQuestions > 0) {
+        progress = 100;
+    }
+
+    progressBarFill.style.width = progress + '%';
 }
 
 function loadAvailableQuestions() {
@@ -171,6 +239,7 @@ function loadAvailableQuestions() {
                 questionItem.classList.remove('selected');
             }
             updateQuestionCounter();
+            updateProgressBar();
         });
 
         const content = document.createElement('div');
@@ -199,6 +268,7 @@ function loadAvailableQuestions() {
     }
 
     updateQuestionCounter();
+    updateProgressBar();
 }
 
 function filterQuestions() {
@@ -257,6 +327,7 @@ function toggleSelectAllQuestions() {
     }
     
     updateQuestionCounter();
+    updateProgressBar();
 }
 
 function handleSurveySubmit(e) {

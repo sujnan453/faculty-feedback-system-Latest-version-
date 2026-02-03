@@ -279,6 +279,7 @@
             color: #333;
             font-size: 14px;
             margin-bottom: 3px;
+            display: block;
         }
 
         .faculty-subject {
@@ -588,6 +589,132 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        /* Accessibility: Screen Reader Only Text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Accessibility: Enhanced Focus Indicators */
+        button:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 3px solid #0052cc;
+            outline-offset: 2px;
+        }
+
+        .btn-create-dept:focus {
+            outline: 3px solid #0052cc;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.2);
+        }
+
+        .btn-edit:focus,
+        .btn-remove:focus,
+        .btn-add-faculty:focus {
+            outline: 3px solid #0052cc;
+            outline-offset: 2px;
+        }
+
+        .close-btn:focus {
+            outline: 3px solid #0052cc;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        .btn-cancel:focus,
+        .btn-submit:focus {
+            outline: 3px solid #0052cc;
+            outline-offset: 2px;
+        }
+
+        /* Focus visible for keyboard navigation */
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid #0052cc;
+            outline-offset: 2px;
+        }
+
+        /* Enhanced focus for form inputs */
+        .form-row input:focus {
+            outline: 3px solid #0052cc;
+            outline-offset: 2px;
+            border-color: #0052cc;
+            box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.1);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: 3px solid #0052cc;
+            outline-offset: 2px;
+            border-color: #0052cc;
+            box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.1);
+        }
+
+        /* Focus indicator for department cards */
+        .department-card:focus-within {
+            outline: 3px solid #0052cc;
+            outline-offset: 2px;
+        }
+
+        /* Focus indicator for faculty items */
+        .faculty-item:focus-within {
+            outline: 2px solid #0052cc;
+            outline-offset: 1px;
+        }
+
+        /* Skip to main content link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #0052cc;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+            border-radius: 0 0 4px 0;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: more) {
+            button:focus,
+            input:focus,
+            select:focus,
+            textarea:focus {
+                outline: 4px solid #0052cc;
+                outline-offset: 3px;
+            }
+
+            .btn-create-dept:focus {
+                outline: 4px solid #0052cc;
+                outline-offset: 3px;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 
@@ -624,6 +751,10 @@
                     <span class="icon">📈</span>
                     <span>Visualizations</span>
                 </a>
+                <a href="faculty-performance.html" class="nav-item">
+                    <span class="icon">👨‍🏫</span>
+                    <span>Faculty Performance</span>
+                </a>
                 <a href="reset-data.html" class="nav-item">
                     <span class="icon">🔄</span>
                     <span>Reset Data</span>
@@ -650,7 +781,12 @@
                 <div id="alertMessage" class="alert"></div>
 
                 <div class="header-actions">
-                    <button class="btn-create-dept" onclick="openCreateDeptModal()">➕ Create New Department</button>
+                    <button class="btn-create-dept" onclick="openCreateDeptModal()" 
+                            aria-label="Create a new department"
+                            aria-describedby="create-dept-help">
+                        ➕ Create New Department
+                    </button>
+                    <span id="create-dept-help" class="sr-only">Opens a modal to create a new department with name and full name</span>
                 </div>
 
                 <div id="departmentsContainer" class="departments-grid">
@@ -661,27 +797,43 @@
     </div>
 
     <!-- Create Department Modal -->
-    <div id="createDeptModal" class="modal">
+    <div id="createDeptModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>➕ Create New Department</h2>
-                <button class="close-btn" onclick="closeCreateDeptModal()">&times;</button>
+                <h2 id="modalTitle">➕ Create New Department</h2>
+                <button class="close-btn" onclick="closeCreateDeptModal()" 
+                        aria-label="Close dialog"
+                        aria-describedby="close-help">
+                    &times;
+                </button>
+                <span id="close-help" class="sr-only">Press to close this dialog</span>
             </div>
 
-            <form id="createDeptForm" onsubmit="submitCreateDept(event)">
+            <form id="createDeptForm" onsubmit="submitCreateDept(event)" aria-label="Create department form">
                 <div class="form-group">
-                    <label for="deptName">Department Name <span style="color: red;">*</span></label>
-                    <input type="text" id="deptName" placeholder="e.g., BCA, BSC" required>
+                    <label for="deptName">Department Name <span style="color: red;" aria-label="required">*</span></label>
+                    <input type="text" id="deptName" placeholder="e.g., BCA, BSC" required
+                           aria-required="true"
+                           aria-describedby="deptNameHelp">
+                    <span id="deptNameHelp" class="sr-only">Enter the department name, e.g., BCA or BSC</span>
                 </div>
 
                 <div class="form-group">
                     <label for="deptFullName">Full Name (Optional)</label>
-                    <input type="text" id="deptFullName" placeholder="e.g., Bachelor of Computer Applications">
+                    <input type="text" id="deptFullName" placeholder="e.g., Bachelor of Computer Applications"
+                           aria-describedby="deptFullNameHelp">
+                    <span id="deptFullNameHelp" class="sr-only">Enter the full name of the department, optional</span>
                 </div>
 
                 <div class="modal-buttons">
-                    <button type="button" class="btn-cancel" onclick="closeCreateDeptModal()">Cancel</button>
-                    <button type="submit" class="btn-submit">Create Department</button>
+                    <button type="button" class="btn-cancel" onclick="closeCreateDeptModal()"
+                            aria-label="Cancel and close dialog">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-submit"
+                            aria-label="Submit and create department">
+                        Create Department
+                    </button>
                 </div>
             </form>
         </div>
